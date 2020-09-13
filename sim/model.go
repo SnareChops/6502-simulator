@@ -284,28 +284,36 @@ func (m *Model) DEY() {
 
 // ASL performs an ASL operation
 func (m *Model) ASL(r Resolver) {
-	var result uint16
 	if r != nil {
 		a, val := r(m)
-		result = uint16(val) << 1
-		m.Set(byte(result), a...)
+		m.updateRegisterBit(c, 0b10000000&val != 0)
+		val <<= 1
+		m.Set(val, a...)
+		m.updateRegisterBit(n, int8(val) < 0)
+		m.updateRegisterBit(z, byte(val) == 0)
 	} else {
-		result = uint16(m.A) << 1
-		m.A = byte(result)
+		m.updateRegisterBit(c, 0b10000000&m.A != 0)
+		m.A <<= 1
+		m.updateRegisterBit(n, int8(m.A) < 0)
+		m.updateRegisterBit(z, byte(m.A) == 0)
 	}
-	m.updateRegisterBit(c, 0b100000000&result != 0)
-	m.updateRegisterBit(n, int8(result) < 0)
-	m.updateRegisterBit(z, byte(result) == 0)
 }
 
 // LSR performs an LSR operation
 func (m *Model) LSR(r Resolver) {
-	a, val := r(m)
-	m.updateRegisterBit(c, val&1 == 0x01)
-	val >>= 1
-	m.Set(val, a...)
-	m.updateRegisterBit(n, int8(val) < 0)
-	m.updateRegisterBit(z, val == 0)
+	if r != nil {
+		a, val := r(m)
+		m.updateRegisterBit(c, val&1 != 0)
+		val >>= 1
+		m.Set(val, a...)
+		m.updateRegisterBit(n, int8(val) < 0)
+		m.updateRegisterBit(z, val == 0)
+	} else {
+		m.updateRegisterBit(c, m.A&1 != 0)
+		m.A >>= 1
+		m.updateRegisterBit(n, int8(m.A) < 0)
+		m.updateRegisterBit(z, m.A == 0)
+	}
 }
 
 // SetCarry sets the carry flag
