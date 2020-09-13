@@ -335,6 +335,25 @@ func (m *Model) ROL(r Resolver) {
 	}
 }
 
+// ROR performs a ROR operation
+func (m *Model) ROR(r Resolver) {
+	ror := func(val byte) byte {
+		o := m.C()
+		m.updateRegisterBit(c, val&1 != 0)
+		val >>= 1
+		val |= o << 7
+		m.updateRegisterBit(n, int8(val) < 0)
+		m.updateRegisterBit(z, val == 0)
+		return val
+	}
+	if r != nil {
+		a, val := r(m)
+		m.Set(ror(val), a...)
+	} else {
+		m.A = ror(m.A)
+	}
+}
+
 // SetCarry sets the carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)
