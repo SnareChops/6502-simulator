@@ -378,6 +378,12 @@ func (m *Model) XOR(r Resolver) {
 	m.updateRegisterBit(z, m.A == 0)
 }
 
+// CMP performs a CMP operation
+func (m *Model) CMP(r Resolver) {
+	_, val := r(m)
+	m.compare(m.A, val)
+}
+
 // SetCarry sets the carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)
@@ -386,6 +392,12 @@ func (m *Model) SetCarry() {
 // ClearCarry clears the carry flag
 func (m *Model) ClearCarry() {
 	m.clearRegisterBit(c)
+}
+
+func (m *Model) compare(a, b byte) {
+	m.updateRegisterBit(n, a < b)
+	m.updateRegisterBit(z, a == b)
+	m.updateRegisterBit(c, a >= b)
 }
 
 func (m *Model) borrow() byte {
