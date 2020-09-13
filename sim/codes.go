@@ -137,5 +137,11 @@ func InitOpcodes(m *Model) Opcodes {
 		0x30: func() { m.BMI(m.NextByte()) },
 		0x50: func() { m.BVC(m.NextByte()) },
 		0x70: func() { m.BVS(m.NextByte()) },
+		0xaa: func() { m.TAX() },
+		0x8a: func() { m.TXA() },
+		0xa8: func() { m.TAY() },
+		0x98: func() { m.TYA() },
+		0xba: func() { m.TSX() },
+		0x9a: func() { m.TXS() },
 	}
 }

@@ -460,6 +460,48 @@ func (m *Model) BVS(b byte) {
 	}
 }
 
+// TAX performs a TAX operation
+func (m *Model) TAX() {
+	m.X = m.A
+	m.updateRegisterBit(n, int8(m.X) < 0)
+	m.updateRegisterBit(z, m.X == 0)
+}
+
+// TXA performs a TXA operation
+func (m *Model) TXA() {
+	m.A = m.X
+	m.updateRegisterBit(n, int8(m.A) < 0)
+	m.updateRegisterBit(z, m.A == 0)
+}
+
+// TAY performs a TAY operation
+func (m *Model) TAY() {
+	m.Y = m.A
+	m.updateRegisterBit(n, int8(m.Y) < 0)
+	m.updateRegisterBit(z, m.Y == 0)
+}
+
+// TYA performs a TYA operation
+func (m *Model) TYA() {
+	m.A = m.Y
+	m.updateRegisterBit(n, int8(m.A) < 0)
+	m.updateRegisterBit(z, m.A == 0)
+}
+
+// TSX performs a TSX operation
+func (m *Model) TSX() {
+	m.X = m.SP
+	m.updateRegisterBit(n, int8(m.X) < 0)
+	m.updateRegisterBit(z, m.X == 0)
+}
+
+// TXS performs a TXS operation
+func (m *Model) TXS() {
+	m.SP = m.X
+	m.updateRegisterBit(n, int8(m.SP) < 0)
+	m.updateRegisterBit(z, m.SP == 0)
+}
+
 // SetCarry sets the Carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)
