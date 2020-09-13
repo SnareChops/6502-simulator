@@ -129,5 +129,6 @@ func InitOpcodes(m *Model) Opcodes {
 		0x2c: func() { m.BIT(AResolver(m.NextWord()...)) },
 		0x89: func() { m.BIT(IResolver(m.NextByte())) },
 		0x24: func() { m.BIT(ZPResolver(m.NextByte())) },
+		0x90: func() { m.BCC(m.NextByte()) },
 	}
 }

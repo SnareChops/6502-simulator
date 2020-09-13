@@ -404,6 +404,13 @@ func (m *Model) BIT(r Resolver) {
 	m.updateRegisterBit(z, m.A&val == 0)
 }
 
+// BCC performs a BCC operation
+func (m *Model) BCC(b byte) {
+	if m.C() == 0 {
+		m.offsetPC(b - 1)
+	}
+}
+
 // SetCarry sets the carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)
@@ -412,6 +419,14 @@ func (m *Model) SetCarry() {
 // ClearCarry clears the carry flag
 func (m *Model) ClearCarry() {
 	m.clearRegisterBit(c)
+}
+
+func (m *Model) offsetPC(b byte) {
+	if int8(b) < 0 {
+		m.PC -= uint16(^b + 1)
+	} else {
+		m.PC += uint16(b)
+	}
 }
 
 func (m *Model) compare(a, b byte) {
