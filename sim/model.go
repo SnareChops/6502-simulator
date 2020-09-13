@@ -298,6 +298,16 @@ func (m *Model) ASL(r Resolver) {
 	m.updateRegisterBit(z, byte(result) == 0)
 }
 
+// LSR performs an LSR operation
+func (m *Model) LSR(r Resolver) {
+	a, val := r(m)
+	m.updateRegisterBit(c, val&1 == 0x01)
+	val >>= 1
+	m.Set(val, a...)
+	m.updateRegisterBit(n, int8(val) < 0)
+	m.updateRegisterBit(z, val == 0)
+}
+
 // SetCarry sets the carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)

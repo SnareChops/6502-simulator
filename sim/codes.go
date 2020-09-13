@@ -72,5 +72,7 @@ func InitOpcodes(m *Model) Opcodes {
 		0x1e: func() { m.ASL(AXResolver(m.NextWord()...)) },
 		0x0a: func() { m.ASL(nil) },
 		0x06: func() { m.ASL(ZPResolver(m.NextByte())) },
+		0x16: func() { m.ASL(ZPXResolver(m.NextByte())) },
+		0x4e: func() { m.LSR(AResolver(m.NextWord()...)) },
 	}
 }

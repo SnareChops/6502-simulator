@@ -90,14 +90,38 @@ func Test0x06(t *testing.T) {
 	require.False(t, m.N())
 	require.False(t, m.Z())
 
-	m, a = seedZP(0x1e, 0b01000000)
+	m, a = seedZP(0x06, 0b01000000)
 	m.Tick()
 	require.Equal(t, byte(0b10000000), m.Fetch(a))
 	require.Equal(t, byte(0x0), m.C())
 	require.True(t, m.N())
 	require.False(t, m.Z())
 
-	m, a = seedZP(0x1e, 0b10000000)
+	m, a = seedZP(0x06, 0b10000000)
+	m.Tick()
+	require.Equal(t, byte(0x0), m.Fetch(a))
+	require.Equal(t, byte(0x1), m.C())
+	require.False(t, m.N())
+	require.True(t, m.Z())
+}
+
+// ASL zp,x
+func Test0x16(t *testing.T) {
+	m, a := seedZPX(0x16, 0b1)
+	m.Tick()
+	require.Equal(t, byte(0b10), m.Fetch(a))
+	require.Equal(t, byte(0x0), m.C())
+	require.False(t, m.N())
+	require.False(t, m.Z())
+
+	m, a = seedZPX(0x16, 0b01000000)
+	m.Tick()
+	require.Equal(t, byte(0b10000000), m.Fetch(a))
+	require.Equal(t, byte(0x0), m.C())
+	require.True(t, m.N())
+	require.False(t, m.Z())
+
+	m, a = seedZPX(0x16, 0b10000000)
 	m.Tick()
 	require.Equal(t, byte(0x0), m.Fetch(a))
 	require.Equal(t, byte(0x1), m.C())
