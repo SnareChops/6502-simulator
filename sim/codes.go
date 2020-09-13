@@ -96,5 +96,14 @@ func InitOpcodes(m *Model) Opcodes {
 		0x21: func() { m.AND(ZPIXResolver(m.NextByte())) },
 		0x35: func() { m.AND(ZPXResolver(m.NextByte())) },
 		0x31: func() { m.AND(ZPIYResolver(m.NextByte())) },
+		0x0d: func() { m.ORA(AResolver(m.NextWord()...)) },
+		0x1d: func() { m.ORA(AXResolver(m.NextWord()...)) },
+		0x19: func() { m.ORA(AYResolver(m.NextWord()...)) },
+		0x09: func() { m.ORA(IResolver(m.NextByte())) },
+		0x05: func() { m.ORA(ZPResolver(m.NextByte())) },
+		0x01: func() { m.ORA(ZPIXResolver(m.NextByte())) },
+		0x15: func() { m.ORA(ZPXResolver(m.NextByte())) },
+		0x11: func() { m.ORA(ZPIYResolver(m.NextByte())) },
+		0x4d: func() { m.XOR(AResolver(m.NextWord()...)) },
 	}
 }

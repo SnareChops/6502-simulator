@@ -358,8 +358,24 @@ func (m *Model) ROR(r Resolver) {
 func (m *Model) AND(r Resolver) {
 	_, val := r(m)
 	m.A &= val
-	m.updateRegisterBit(n, int8(val) < 0)
-	m.updateRegisterBit(z, val == 0)
+	m.updateRegisterBit(n, int8(m.A) < 0)
+	m.updateRegisterBit(z, m.A == 0)
+}
+
+// ORA performs an ORA operation
+func (m *Model) ORA(r Resolver) {
+	_, val := r(m)
+	m.A |= val
+	m.updateRegisterBit(n, int8(m.A) < 0)
+	m.updateRegisterBit(z, m.A == 0)
+}
+
+// XOR performs an XOR operation
+func (m *Model) XOR(r Resolver) {
+	_, val := r(m)
+	m.A ^= val
+	m.updateRegisterBit(n, int8(m.A) < 0)
+	m.updateRegisterBit(z, m.A == 0)
 }
 
 // SetCarry sets the carry flag
