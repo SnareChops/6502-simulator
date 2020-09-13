@@ -130,5 +130,12 @@ func InitOpcodes(m *Model) Opcodes {
 		0x89: func() { m.BIT(IResolver(m.NextByte())) },
 		0x24: func() { m.BIT(ZPResolver(m.NextByte())) },
 		0x90: func() { m.BCC(m.NextByte()) },
+		0xb0: func() { m.BCS(m.NextByte()) },
+		0xd0: func() { m.BNE(m.NextByte()) },
+		0xf0: func() { m.BEQ(m.NextByte()) },
+		0x10: func() { m.BPL(m.NextByte()) },
+		0x30: func() { m.BMI(m.NextByte()) },
+		0x50: func() { m.BVC(m.NextByte()) },
+		0x70: func() { m.BVS(m.NextByte()) },
 	}
 }

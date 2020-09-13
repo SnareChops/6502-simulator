@@ -407,21 +407,86 @@ func (m *Model) BIT(r Resolver) {
 // BCC performs a BCC operation
 func (m *Model) BCC(b byte) {
 	if m.C() == 0 {
-		m.offsetPC(b - 1)
+		m.offsetPC(b)
 	}
 }
 
-// SetCarry sets the carry flag
+// BCS performs a BCS operation
+func (m *Model) BCS(b byte) {
+	if m.C() != 0 {
+		m.offsetPC(b)
+	}
+}
+
+// BNE performs a BNE operation
+func (m *Model) BNE(b byte) {
+	if !m.Z() {
+		m.offsetPC(b)
+	}
+}
+
+// BEQ performs a BEQ operation
+func (m *Model) BEQ(b byte) {
+	if m.Z() {
+		m.offsetPC(b)
+	}
+}
+
+// BPL performs a BPL operation
+func (m *Model) BPL(b byte) {
+	if !m.N() {
+		m.offsetPC(b)
+	}
+}
+
+// BMI performs a BMI operation
+func (m *Model) BMI(b byte) {
+	if m.N() {
+		m.offsetPC(b)
+	}
+}
+
+// BVC performs a BVC operation
+func (m *Model) BVC(b byte) {
+	if !m.V() {
+		m.offsetPC(b)
+	}
+}
+
+// BVS performs a BVS operation
+func (m *Model) BVS(b byte) {
+	if m.V() {
+		m.offsetPC(b)
+	}
+}
+
+// SetCarry sets the Carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)
 }
 
-// ClearCarry clears the carry flag
+// ClearCarry clears the Carry flag
 func (m *Model) ClearCarry() {
 	m.clearRegisterBit(c)
 }
 
+// SetZero sets the Zero flag
+func (m *Model) SetZero() {
+	m.setRegisterBit(z)
+}
+
+// SetNegative sets the Negative flag
+func (m *Model) SetNegative() {
+	m.setRegisterBit(n)
+}
+
+// SetOverflow sets the oVerflow flag
+func (m *Model) SetOverflow() {
+	m.setRegisterBit(v)
+}
+
 func (m *Model) offsetPC(b byte) {
+	b--
 	if int8(b) < 0 {
 		m.PC -= uint16(^b + 1)
 	} else {
