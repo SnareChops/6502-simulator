@@ -354,6 +354,14 @@ func (m *Model) ROR(r Resolver) {
 	}
 }
 
+// AND performs an AND operation
+func (m *Model) AND(r Resolver) {
+	_, val := r(m)
+	m.A &= val
+	m.updateRegisterBit(n, int8(val) < 0)
+	m.updateRegisterBit(z, val == 0)
+}
+
 // SetCarry sets the carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)

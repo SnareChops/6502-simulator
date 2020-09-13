@@ -88,5 +88,13 @@ func InitOpcodes(m *Model) Opcodes {
 		0x6a: func() { m.ROR(nil) },
 		0x66: func() { m.ROR(ZPResolver(m.NextByte())) },
 		0x76: func() { m.ROR(ZPXResolver(m.NextByte())) },
+		0x2d: func() { m.AND(AResolver(m.NextWord()...)) },
+		0x3d: func() { m.AND(AXResolver(m.NextWord()...)) },
+		0x39: func() { m.AND(AYResolver(m.NextWord()...)) },
+		0x29: func() { m.AND(IResolver(m.NextByte())) },
+		0x25: func() { m.AND(ZPResolver(m.NextByte())) },
+		0x21: func() { m.AND(ZPIXResolver(m.NextByte())) },
+		0x35: func() { m.AND(ZPXResolver(m.NextByte())) },
+		0x31: func() { m.AND(ZPIYResolver(m.NextByte())) },
 	}
 }
