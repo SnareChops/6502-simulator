@@ -390,6 +390,12 @@ func (m *Model) CPX(r Resolver) {
 	m.compare(m.X, val)
 }
 
+// CPY performs a CPY operation
+func (m *Model) CPY(r Resolver) {
+	_, val := r(m)
+	m.compare(m.Y, val)
+}
+
 // SetCarry sets the carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)
