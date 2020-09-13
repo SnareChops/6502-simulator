@@ -384,6 +384,12 @@ func (m *Model) CMP(r Resolver) {
 	m.compare(m.A, val)
 }
 
+// CPX performs a CPX operation
+func (m *Model) CPX(r Resolver) {
+	_, val := r(m)
+	m.compare(m.X, val)
+}
+
 // SetCarry sets the carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)

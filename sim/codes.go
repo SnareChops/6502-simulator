@@ -120,5 +120,8 @@ func InitOpcodes(m *Model) Opcodes {
 		0xc1: func() { m.CMP(ZPIXResolver(m.NextByte())) },
 		0xd5: func() { m.CMP(ZPXResolver(m.NextByte())) },
 		0xd1: func() { m.CMP(ZPIYResolver(m.NextByte())) },
+		0xec: func() { m.CPX(AResolver(m.NextWord()...)) },
+		0xe0: func() { m.CPX(IResolver(m.NextByte())) },
+		0xe4: func() { m.CPX(ZPResolver(m.NextByte())) },
 	}
 }
