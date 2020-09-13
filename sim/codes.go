@@ -126,5 +126,8 @@ func InitOpcodes(m *Model) Opcodes {
 		0xcc: func() { m.CPY(AResolver(m.NextWord()...)) },
 		0xc0: func() { m.CPY(IResolver(m.NextByte())) },
 		0xc4: func() { m.CPY(ZPResolver(m.NextByte())) },
+		0x2c: func() { m.BIT(AResolver(m.NextWord()...)) },
+		0x89: func() { m.BIT(IResolver(m.NextByte())) },
+		0x24: func() { m.BIT(ZPResolver(m.NextByte())) },
 	}
 }

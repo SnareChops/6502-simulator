@@ -396,6 +396,14 @@ func (m *Model) CPY(r Resolver) {
 	m.compare(m.Y, val)
 }
 
+// BIT performs a BIT operation
+func (m *Model) BIT(r Resolver) {
+	_, val := r(m)
+	m.updateRegisterBit(n, val&(1<<7) != 0)
+	m.updateRegisterBit(v, val&(1<<6) != 0)
+	m.updateRegisterBit(z, m.A&val == 0)
+}
+
 // SetCarry sets the carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)
