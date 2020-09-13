@@ -284,35 +284,54 @@ func (m *Model) DEY() {
 
 // ASL performs an ASL operation
 func (m *Model) ASL(r Resolver) {
-	if r != nil {
-		a, val := r(m)
+	asl := func(val byte) byte {
 		m.updateRegisterBit(c, 0b10000000&val != 0)
 		val <<= 1
-		m.Set(val, a...)
 		m.updateRegisterBit(n, int8(val) < 0)
 		m.updateRegisterBit(z, byte(val) == 0)
+		return val
+	}
+	if r != nil {
+		a, val := r(m)
+		m.Set(asl(val), a...)
 	} else {
-		m.updateRegisterBit(c, 0b10000000&m.A != 0)
-		m.A <<= 1
-		m.updateRegisterBit(n, int8(m.A) < 0)
-		m.updateRegisterBit(z, byte(m.A) == 0)
+		m.A = asl(m.A)
 	}
 }
 
 // LSR performs an LSR operation
 func (m *Model) LSR(r Resolver) {
-	if r != nil {
-		a, val := r(m)
+	lsr := func(val byte) byte {
 		m.updateRegisterBit(c, val&1 != 0)
 		val >>= 1
-		m.Set(val, a...)
 		m.updateRegisterBit(n, int8(val) < 0)
 		m.updateRegisterBit(z, val == 0)
+		return val
+	}
+	if r != nil {
+		a, val := r(m)
+		m.Set(lsr(val), a...)
 	} else {
-		m.updateRegisterBit(c, m.A&1 != 0)
-		m.A >>= 1
-		m.updateRegisterBit(n, int8(m.A) < 0)
-		m.updateRegisterBit(z, m.A == 0)
+		m.A = lsr(m.A)
+	}
+}
+
+// ROL performs a ROL operation
+func (m *Model) ROL(r Resolver) {
+	rol := func(val byte) byte {
+		o := m.C()
+		m.updateRegisterBit(c, val&0b10000000 != 0)
+		val <<= 1
+		val |= o
+		m.updateRegisterBit(n, int8(val) < 0)
+		m.updateRegisterBit(z, val == 0)
+		return val
+	}
+	if r != nil {
+		a, val := r(m)
+		m.Set(rol(val), a...)
+	} else {
+		m.A = rol(m.A)
 	}
 }
 
@@ -328,7 +347,7 @@ func (m *Model) ClearCarry() {
 
 func (m *Model) borrow() byte {
 	if m.C() == 0x0 {
-		return 0x01
+		return 0x1
 	}
 	return 0x0
 }
