@@ -553,15 +553,49 @@ func (m *Model) RTI() {
 	m.RTS()
 }
 
-// SetCarry sets the Carry flag
-func (m *Model) SetCarry() {
+// CLC performs a CLC operation
+func (m *Model) CLC() {
+	m.clearRegisterBit(c)
+}
+
+// SEC performs a SEC operation
+func (m *Model) SEC() {
 	m.setRegisterBit(c)
 }
 
-// ClearCarry clears the Carry flag
-func (m *Model) ClearCarry() {
-	m.clearRegisterBit(c)
+// CLD performs a CLD operation
+func (m *Model) CLD() {
+	m.clearRegisterBit(d)
 }
+
+// SED performs a SED operation
+func (m *Model) SED() {
+	m.setRegisterBit(d)
+}
+
+// CLI performs a CLI operation
+func (m *Model) CLI() {
+	m.clearRegisterBit(i)
+}
+
+// SEI performs an SEI operation
+func (m *Model) SEI() {
+	m.setRegisterBit(i)
+}
+
+// CLV performs a CLV operation
+func (m *Model) CLV() {
+	m.clearRegisterBit(v)
+}
+
+// BRK performs a BRK operation
+func (m *Model) BRK() {
+	m.setRegisterBit(b)
+	m.setRegisterBit(i)
+}
+
+// NOP does nothing
+func (m *Model) NOP() {}
 
 // SetZero sets the Zero flag
 func (m *Model) SetZero() {

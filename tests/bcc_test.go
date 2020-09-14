@@ -19,7 +19,7 @@ func Test0x90(t *testing.T) {
 	require.Equal(t, uint16(3), m.PC)
 
 	m = raw(0x90, 2)
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, uint16(2), m.PC)
 }

@@ -9,14 +9,14 @@ import (
 // BCS
 func Test0xb0(t *testing.T) {
 	m := raw(0xb0, 0xff)
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, uint16(0x0), m.PC)
 	m.Tick()
 	require.Equal(t, uint16(0x0), m.PC)
 
 	m = raw(0xb0, 2)
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, uint16(3), m.PC)
 

@@ -10,7 +10,7 @@ import (
 func Test0xed(t *testing.T) {
 	m, _ := seedA(0xed, 0x02)
 	m.A = 0x0c
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0a), m.A)
 	require.False(t, m.N())
@@ -20,7 +20,7 @@ func Test0xed(t *testing.T) {
 
 	m, _ = seedA(0xed, 0x02)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0), m.A)
 	require.False(t, m.N())
@@ -30,7 +30,7 @@ func Test0xed(t *testing.T) {
 
 	m, _ = seedA(0xed, 0x04)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0xfe), m.A)
 	require.True(t, m.N())
@@ -40,7 +40,7 @@ func Test0xed(t *testing.T) {
 
 	m, _ = seedA(0xed, 0x01)
 	m.A = 0x10
-	m.ClearCarry()
+	m.CLC()
 	m.Tick()
 	require.Equal(t, byte(0x0e), m.A)
 	require.False(t, m.N())
@@ -53,7 +53,7 @@ func Test0xed(t *testing.T) {
 func Test0xfd(t *testing.T) {
 	m, _ := seedAX(0xfd, 0x02)
 	m.A = 0x0c
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0a), m.A)
 	require.False(t, m.N())
@@ -63,7 +63,7 @@ func Test0xfd(t *testing.T) {
 
 	m, _ = seedAX(0xfd, 0x02)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0), m.A)
 	require.False(t, m.N())
@@ -73,7 +73,7 @@ func Test0xfd(t *testing.T) {
 
 	m, _ = seedAX(0xfd, 0x04)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0xfe), m.A)
 	require.True(t, m.N())
@@ -83,7 +83,7 @@ func Test0xfd(t *testing.T) {
 
 	m, _ = seedAX(0xfd, 0x01)
 	m.A = 0x10
-	m.ClearCarry()
+	m.CLC()
 	m.Tick()
 	require.Equal(t, byte(0x0e), m.A)
 	require.False(t, m.N())
@@ -96,7 +96,7 @@ func Test0xfd(t *testing.T) {
 func Test0xf9(t *testing.T) {
 	m, _ := seedAY(0xf9, 0x02)
 	m.A = 0x0c
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0a), m.A)
 	require.False(t, m.N())
@@ -106,7 +106,7 @@ func Test0xf9(t *testing.T) {
 
 	m, _ = seedAY(0xf9, 0x02)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0), m.A)
 	require.False(t, m.N())
@@ -116,7 +116,7 @@ func Test0xf9(t *testing.T) {
 
 	m, _ = seedAY(0xf9, 0x04)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0xfe), m.A)
 	require.True(t, m.N())
@@ -126,7 +126,7 @@ func Test0xf9(t *testing.T) {
 
 	m, _ = seedAY(0xf9, 0x01)
 	m.A = 0x10
-	m.ClearCarry()
+	m.CLC()
 	m.Tick()
 	require.Equal(t, byte(0x0e), m.A)
 	require.False(t, m.N())
@@ -139,7 +139,7 @@ func Test0xf9(t *testing.T) {
 func Test0xe9(t *testing.T) {
 	m := raw(0xe9, 0x02)
 	m.A = 0x0c
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0a), m.A)
 	require.False(t, m.N())
@@ -149,7 +149,7 @@ func Test0xe9(t *testing.T) {
 
 	m = raw(0xe9, 0x02)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0), m.A)
 	require.False(t, m.N())
@@ -159,7 +159,7 @@ func Test0xe9(t *testing.T) {
 
 	m = raw(0xe9, 0x04)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0xfe), m.A)
 	require.True(t, m.N())
@@ -169,7 +169,7 @@ func Test0xe9(t *testing.T) {
 
 	m = raw(0xe9, 0x01)
 	m.A = 0x10
-	m.ClearCarry()
+	m.CLC()
 	m.Tick()
 	require.Equal(t, byte(0x0e), m.A)
 	require.False(t, m.N())
@@ -182,7 +182,7 @@ func Test0xe9(t *testing.T) {
 func Test0xe5(t *testing.T) {
 	m, _ := seedZP(0xe5, 0x02)
 	m.A = 0x0c
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0a), m.A)
 	require.False(t, m.N())
@@ -192,7 +192,7 @@ func Test0xe5(t *testing.T) {
 
 	m, _ = seedZP(0xe5, 0x02)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0), m.A)
 	require.False(t, m.N())
@@ -202,7 +202,7 @@ func Test0xe5(t *testing.T) {
 
 	m, _ = seedZP(0xe5, 0x04)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0xfe), m.A)
 	require.True(t, m.N())
@@ -212,7 +212,7 @@ func Test0xe5(t *testing.T) {
 
 	m, _ = seedZP(0xe5, 0x01)
 	m.A = 0x10
-	m.ClearCarry()
+	m.CLC()
 	m.Tick()
 	require.Equal(t, byte(0x0e), m.A)
 	require.False(t, m.N())
@@ -225,7 +225,7 @@ func Test0xe5(t *testing.T) {
 func Test0xe1(t *testing.T) {
 	m, _ := seedZPIX(0xe1, 0x02)
 	m.A = 0x0c
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0a), m.A)
 	require.False(t, m.N())
@@ -235,7 +235,7 @@ func Test0xe1(t *testing.T) {
 
 	m, _ = seedZPIX(0xe1, 0x02)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0), m.A)
 	require.False(t, m.N())
@@ -245,7 +245,7 @@ func Test0xe1(t *testing.T) {
 
 	m, _ = seedZPIX(0xe1, 0x04)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0xfe), m.A)
 	require.True(t, m.N())
@@ -255,7 +255,7 @@ func Test0xe1(t *testing.T) {
 
 	m, _ = seedZPIX(0xe1, 0x01)
 	m.A = 0x10
-	m.ClearCarry()
+	m.CLC()
 	m.Tick()
 	require.Equal(t, byte(0x0e), m.A)
 	require.False(t, m.N())
@@ -268,7 +268,7 @@ func Test0xe1(t *testing.T) {
 func Test0xf5(t *testing.T) {
 	m, _ := seedZPX(0xf5, 0x02)
 	m.A = 0x0c
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0a), m.A)
 	require.False(t, m.N())
@@ -278,7 +278,7 @@ func Test0xf5(t *testing.T) {
 
 	m, _ = seedZPX(0xf5, 0x02)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0), m.A)
 	require.False(t, m.N())
@@ -288,7 +288,7 @@ func Test0xf5(t *testing.T) {
 
 	m, _ = seedZPX(0xf5, 0x04)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0xfe), m.A)
 	require.True(t, m.N())
@@ -298,7 +298,7 @@ func Test0xf5(t *testing.T) {
 
 	m, _ = seedZPX(0xf5, 0x01)
 	m.A = 0x10
-	m.ClearCarry()
+	m.CLC()
 	m.Tick()
 	require.Equal(t, byte(0x0e), m.A)
 	require.False(t, m.N())
@@ -311,7 +311,7 @@ func Test0xf5(t *testing.T) {
 func Test0xf1(t *testing.T) {
 	m, _ := seedZPIY(0xf1, 0x02)
 	m.A = 0x0c
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0a), m.A)
 	require.False(t, m.N())
@@ -321,7 +321,7 @@ func Test0xf1(t *testing.T) {
 
 	m, _ = seedZPIY(0xf1, 0x02)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0x0), m.A)
 	require.False(t, m.N())
@@ -331,7 +331,7 @@ func Test0xf1(t *testing.T) {
 
 	m, _ = seedZPIY(0xf1, 0x04)
 	m.A = 0x02
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0xfe), m.A)
 	require.True(t, m.N())
@@ -341,7 +341,7 @@ func Test0xf1(t *testing.T) {
 
 	m, _ = seedZPIY(0xf1, 0x01)
 	m.A = 0x10
-	m.ClearCarry()
+	m.CLC()
 	m.Tick()
 	require.Equal(t, byte(0x0e), m.A)
 	require.False(t, m.N())

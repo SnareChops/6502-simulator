@@ -9,7 +9,7 @@ import (
 // ROL a
 func Test0x2e(t *testing.T) {
 	m, a := seedA(0x2e, 0b1)
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0b11), m.Fetch(a...))
 	require.Equal(t, byte(0), m.C())
@@ -34,7 +34,7 @@ func Test0x2e(t *testing.T) {
 // ROL a,x
 func Test0x3e(t *testing.T) {
 	m, a := seedA(0x3e, 0b1)
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0b11), m.Fetch(a...))
 	require.Equal(t, byte(0), m.C())
@@ -60,7 +60,7 @@ func Test0x3e(t *testing.T) {
 func Test0x2a(t *testing.T) {
 	m := raw(0x2a)
 	m.A = 0b1
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0b11), m.A)
 	require.Equal(t, byte(0), m.C())
@@ -87,7 +87,7 @@ func Test0x2a(t *testing.T) {
 // ROL zp
 func Test0x26(t *testing.T) {
 	m, a := seedZP(0x26, 0b1)
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0b11), m.Fetch(a))
 	require.Equal(t, byte(0), m.C())
@@ -112,7 +112,7 @@ func Test0x26(t *testing.T) {
 // ROL zp,x
 func Test0x36(t *testing.T) {
 	m, a := seedZPX(0x36, 0b1)
-	m.SetCarry()
+	m.SEC()
 	m.Tick()
 	require.Equal(t, byte(0b11), m.Fetch(a))
 	require.Equal(t, byte(0), m.C())

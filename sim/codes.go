@@ -152,5 +152,14 @@ func InitOpcodes(m *Model) Opcodes {
 		0x20: func() { m.JSR(m.NextWord()...) },
 		0x60: func() { m.RTS() },
 		0x40: func() { m.RTI() },
+		0x18: func() { m.CLC() },
+		0x38: func() { m.SEC() },
+		0xd8: func() { m.CLD() },
+		0xf8: func() { m.SED() },
+		0x58: func() { m.CLI() },
+		0x78: func() { m.SEI() },
+		0xb8: func() { m.CLV() },
+		0x00: func() { m.BRK() },
+		0xea: func() { m.NOP() },
 	}
 }
