@@ -29,6 +29,16 @@ func seedA(op, val byte) (*sim.Model, []byte) {
 	return m, a
 }
 
+func seedAI(op, val byte) (*sim.Model, []byte) {
+	a := []byte{0x12, 0xaa}
+	a2 := sim.AsBytes(sim.AsUint16(a...) + 1)
+	m := raw(op, a[0], a[1])
+	m.Set(0xee, a...)
+	m.Set(0xcc, a2...)
+	m.Set(val, 0xee, 0xcc)
+	return m, []byte{0xee, 0xcc}
+}
+
 func seedAX(op, val byte) (*sim.Model, []byte) {
 	a := []byte{0x12, 0xaa}
 	m := raw(op, a[0]-0x02, a[1])

@@ -147,5 +147,8 @@ func InitOpcodes(m *Model) Opcodes {
 		0x68: func() { m.PLA() },
 		0x08: func() { m.PHP() },
 		0x28: func() { m.PLP() },
+		0x4c: func() { m.JMP(JMPAResolver(m.NextWord()...)) },
+		0x6c: func() { m.JMP(JMPAIResolver(m.NextWord()...)) },
+		0x20: func() { m.JSR(m.NextWord()...) },
 	}
 }

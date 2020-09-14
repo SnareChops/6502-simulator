@@ -74,3 +74,23 @@ func IResolver(b byte) Resolver {
 		return nil, b
 	}
 }
+
+type JMPResolver = func(*Model) []byte
+
+// JMPAResolver returns a resolver that
+// resolves an absolute memory address
+func JMPAResolver(b ...byte) JMPResolver {
+	return func(m *Model) []byte {
+		return b
+	}
+}
+
+// JMPAIResolver returns a resolver that
+// resolves an absolute indexed memory address
+func JMPAIResolver(b ...byte) JMPResolver {
+	return func(m *Model) []byte {
+		a1 := m.Fetch(b...)
+		a2 := m.Fetch(AsBytes(AsUint16(b...) + 1)...)
+		return []byte{a1, a2}
+	}
+}

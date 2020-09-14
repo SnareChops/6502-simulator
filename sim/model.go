@@ -30,7 +30,7 @@ func NewModel() *Model {
 		A:  0x0,
 		X:  0x0,
 		Y:  0x0,
-		PC: 0xffff,
+		PC: 0x0,
 		// SP:     0x0,
 		SR:     0b00100000,
 		Memory: mem,
@@ -54,8 +54,9 @@ func (m *Model) Exec(b byte) {
 // NextByte increments the program counter and
 // returns the byte at that address
 func (m *Model) NextByte() byte {
+	result := m.Fetch(AsBytes(m.PC)...)
 	m.PC++
-	return m.Fetch(AsBytes(m.PC)...)
+	return result
 }
 
 // NextWord increments the program counter and
@@ -525,6 +526,20 @@ func (m *Model) PHP() {
 // PLP performs a PLP operation
 func (m *Model) PLP() {
 	m.SR |= m.Pop()
+}
+
+// JMP performs a JMP operation
+func (m *Model) JMP(r JMPResolver) {
+	val := r(m)
+	m.PC = AsUint16(val...)
+}
+
+// JSR performs a JSR operation
+func (m *Model) JSR(b ...byte) {
+	a := AsBytes(m.PC - 1)
+	m.Push(a[1])
+	m.Push(a[0])
+	m.PC = AsUint16(a...)
 }
 
 // SetCarry sets the Carry flag
