@@ -16,22 +16,25 @@ type Model struct {
 	X  byte
 	Y  byte
 	PC uint16
-	SP byte
+	// SP byte
 	SR byte
 	*Memory
+	*Stack
 	opcodes Opcodes
 }
 
 // NewModel returns a new 6502 sim model
 func NewModel() *Model {
+	mem := NewMemory()
 	m := &Model{
-		A:      0x0,
-		X:      0x0,
-		Y:      0x0,
-		PC:     0xffff,
-		SP:     0x0,
+		A:  0x0,
+		X:  0x0,
+		Y:  0x0,
+		PC: 0xffff,
+		// SP:     0x0,
 		SR:     0b00100000,
-		Memory: NewMemory(),
+		Memory: mem,
+		Stack:  NewStack(mem),
 	}
 	m.opcodes = InitOpcodes(m)
 	return m
@@ -500,6 +503,28 @@ func (m *Model) TXS() {
 	m.SP = m.X
 	m.updateRegisterBit(n, int8(m.SP) < 0)
 	m.updateRegisterBit(z, m.SP == 0)
+}
+
+// PHA performs a PHA operation
+func (m *Model) PHA() {
+	m.Push(m.A)
+}
+
+// PLA performs a PLA operation
+func (m *Model) PLA() {
+	m.A = m.Pop()
+	m.updateRegisterBit(n, int8(m.A) < 0)
+	m.updateRegisterBit(z, m.A == 0)
+}
+
+// PHP performs a PHP operation
+func (m *Model) PHP() {
+	m.Push(m.SR & 0b11001111)
+}
+
+// PLP performs a PLP operation
+func (m *Model) PLP() {
+	m.SR |= m.Pop()
 }
 
 // SetCarry sets the Carry flag

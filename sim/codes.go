@@ -143,5 +143,9 @@ func InitOpcodes(m *Model) Opcodes {
 		0x98: func() { m.TYA() },
 		0xba: func() { m.TSX() },
 		0x9a: func() { m.TXS() },
+		0x48: func() { m.PHA() },
+		0x68: func() { m.PLA() },
+		0x08: func() { m.PHP() },
+		0x28: func() { m.PLP() },
 	}
 }
