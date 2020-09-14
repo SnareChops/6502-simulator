@@ -150,5 +150,7 @@ func InitOpcodes(m *Model) Opcodes {
 		0x4c: func() { m.JMP(JMPAResolver(m.NextWord()...)) },
 		0x6c: func() { m.JMP(JMPAIResolver(m.NextWord()...)) },
 		0x20: func() { m.JSR(m.NextWord()...) },
+		0x60: func() { m.RTS() },
+		0x40: func() { m.RTI() },
 	}
 }

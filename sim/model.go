@@ -542,6 +542,17 @@ func (m *Model) JSR(b ...byte) {
 	m.PC = AsUint16(a...)
 }
 
+// RTS performs an RTS operation
+func (m *Model) RTS() {
+	m.PC = AsUint16(m.Pop(), m.Pop()) + 1
+}
+
+// RTI performs an RTI operation
+func (m *Model) RTI() {
+	m.SR = m.Pop()
+	m.RTS()
+}
+
 // SetCarry sets the Carry flag
 func (m *Model) SetCarry() {
 	m.setRegisterBit(c)
