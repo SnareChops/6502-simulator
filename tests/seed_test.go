@@ -5,7 +5,7 @@ import "github.com/SnareChops/6502-simulator/sim"
 func raw(b ...byte) *sim.Model {
 	m := sim.NewModel()
 	for i := uint16(0); i < uint16(len(b)); i++ {
-		m.Set(b[i], sim.AsBytes(i)...)
+		m.Set(b[i], sim.AsBytes(i+0x0600)...)
 	}
 	return m
 }

@@ -45,6 +45,12 @@ func ZPXResolver(b byte) Resolver {
 	return AXResolver(b)
 }
 
+// ZPYResolver returns a resolver that
+// resolves a zp,y memory address
+func ZPYResolver(b byte) Resolver {
+	return AYResolver(b)
+}
+
 // ZPIXResolver returns a resolver that
 // resolves a (zp,x) memory address
 func ZPIXResolver(b byte) Resolver {

@@ -1,6 +1,8 @@
 package sim
 
-import "github.com/SnareChops/6502-simulator/bit"
+import (
+	"github.com/SnareChops/6502-simulator/bit"
+)
 
 // Model represents a 6502 processor
 type Model struct {
@@ -14,7 +16,7 @@ type Model struct {
 // NewModel returns a new 6502 sim model
 func NewModel() *Model {
 	m := &Model{
-		PC:        0x0,
+		PC:        0x0600,
 		Memory:    NewMemory(),
 		Registers: NewRegisters(),
 		Flags:     NewFlags(),
@@ -48,106 +50,50 @@ func (m *Model) NextWord() []byte {
 	return []byte{m.NextByte(), m.NextByte()}
 }
 
-// AX returns a []byte memory address
-// after adding the value in the X
-// register
-// a,x memory mode
-func (m *Model) AX(b []byte) []byte {
-	return AsBytes(AsUint16(b...) + uint16(m.X))
-}
-
-// AY returns a []byte memory address
-// after adding the value in the Y
-// register
-// a,y memory mode
-func (m *Model) AY(b []byte) []byte {
-	return AsBytes(AsUint16(b...) + uint16(m.Y))
-}
-
-// ZP returns a []byte memory address
-// after padding with zeros
-// zp memory mode
-func (m *Model) ZP(b byte) []byte {
-	return []byte{b, 0x00}
-}
-
-// ZPX retuns a []byte memory address
-// after adding the value in the X
-// register
-// zp,x memory mode
-func (m *Model) ZPX(b byte) []byte {
-	return AsBytes(uint16(b) + uint16(m.X))
-}
-
-// ZPY returns a []byte memory address
-// adter adding the value in the Y
-// register
-// zp,y memory mode
-func (m *Model) ZPY(b byte) []byte {
-	return AsBytes(uint16(b) + uint16(m.Y))
-}
-
-// ZPIX returns a []byte memory address
-// after applying indexing and addition
-// with the X register
-// (zp,x) memory mode
-func (m *Model) ZPIX(b byte) []byte {
-	n := uint16(b) + uint16(m.X)
-	a1 := AsBytes(n)
-	a2 := AsBytes(n + 1)
-	return []byte{m.Fetch(a1...), m.Fetch(a2...)}
-}
-
-// ZPIY returns a []byte memory address
-// after applying indexing and addition
-// with the Y register
-// (zp),y memory mode
-func (m *Model) ZPIY(b byte) []byte {
-	a1 := m.Fetch(b)
-	a2 := m.Fetch(b + 1)
-	return AsBytes(AsUint16(a1, a2) + uint16(m.Y))
-}
-
 // LDA performs an LDA operation
-func (m *Model) LDA(val byte) {
-	m.A = val
+func (m *Model) LDA(r Resolver) {
+	_, m.A = r(m)
 	m.SetN(int8(m.A) < 0)
 	m.SetZ(m.A == 0)
 }
 
 // LDX performs an LDX operation
-func (m *Model) LDX(val byte) {
-	m.X = val
+func (m *Model) LDX(r Resolver) {
+	_, m.X = r(m)
 	m.SetN(int8(m.X) < 0)
 	m.SetZ(m.X == 0)
 }
 
 // LDY performs an LDY operation
-func (m *Model) LDY(val byte) {
-	m.Y = val
+func (m *Model) LDY(r Resolver) {
+	_, m.Y = r(m)
 	m.SetN(int8(m.Y) < 0)
 	m.SetZ(m.Y == 0)
 }
 
 // STA performs an STA operation
-func (m *Model) STA(a ...byte) {
+func (m *Model) STA(r Resolver) {
+	a, _ := r(m)
 	m.Set(m.A, a...)
 }
 
 // STX performs an STX operation
-func (m *Model) STX(a ...byte) {
+func (m *Model) STX(r Resolver) {
+	a, _ := r(m)
 	m.Set(m.X, a...)
 }
 
 // STY performs an STY operation
-func (m *Model) STY(a ...byte) {
+func (m *Model) STY(r Resolver) {
+	a, _ := r(m)
 	m.Set(m.Y, a...)
 }
 
 // ADC performs an ADC operation
-func (m *Model) ADC(a byte) {
+func (m *Model) ADC(r Resolver) {
+	_, val := r(m)
 	initial := m.A
-	m.A += a + m.C()
+	m.A += val + m.C()
 	m.SetN(int8(m.A) < 0)
 	m.SetZ(m.A == 0)
 	m.SetC(uint8(m.A) < uint8(initial))
@@ -155,9 +101,10 @@ func (m *Model) ADC(a byte) {
 }
 
 // SBC performs an SBC operation
-func (m *Model) SBC(a byte) {
+func (m *Model) SBC(r Resolver) {
 	initial := m.A
-	m.A = m.A - a - m.borrow()
+	_, val := r(m)
+	m.A = m.A - val - m.borrow()
 	m.SetN(int8(m.A) < 0)
 	m.SetZ(m.A == 0)
 	m.SetC(uint8(m.A) < uint8(initial))
