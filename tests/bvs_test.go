@@ -9,14 +9,14 @@ import (
 // BVS
 func Test0x70(t *testing.T) {
 	m := raw(0x70, 0xff)
-	m.SetOverflow()
+	m.SetV(true)
 	m.Tick()
 	require.Equal(t, uint16(0), m.PC)
 	m.Tick()
 	require.Equal(t, uint16(0), m.PC)
 
 	m = raw(0x70, 2)
-	m.SetOverflow()
+	m.SetV(true)
 	m.Tick()
 	require.Equal(t, uint16(3), m.PC)
 

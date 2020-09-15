@@ -19,7 +19,7 @@ func Test0x50(t *testing.T) {
 	require.Equal(t, uint16(3), m.PC)
 
 	m = raw(0x50, 2)
-	m.SetOverflow()
+	m.SetV(true)
 	m.Tick()
 	require.Equal(t, uint16(2), m.PC)
 }

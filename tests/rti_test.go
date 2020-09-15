@@ -13,5 +13,5 @@ func Test0x40(t *testing.T) {
 	m.Push(0b01100101)
 	m.Tick()
 	require.Equal(t, uint16(0xbbab), m.PC)
-	require.Equal(t, byte(0b01100101), m.SR)
+	require.Equal(t, byte(0b01100101), m.SR.Byte())
 }

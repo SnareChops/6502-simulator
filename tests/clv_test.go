@@ -9,7 +9,7 @@ import (
 // CLV
 func Test0xb8(t *testing.T) {
 	m := raw(0xb8)
-	m.SetOverflow()
+	m.SetV(true)
 	require.True(t, m.V())
 	m.Tick()
 	require.False(t, m.V())

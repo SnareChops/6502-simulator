@@ -1,40 +1,23 @@
 package sim
 
-const (
-	n = 7
-	v = 6
-	b = 4
-	d = 3
-	i = 2
-	z = 1
-	c = 0
-)
+import "github.com/SnareChops/6502-simulator/bit"
 
 // Model represents a 6502 processor
 type Model struct {
-	A  byte
-	X  byte
-	Y  byte
 	PC uint16
-	// SP byte
-	SR byte
 	*Memory
-	*Stack
+	*Registers
+	*Flags
 	opcodes Opcodes
 }
 
 // NewModel returns a new 6502 sim model
 func NewModel() *Model {
-	mem := NewMemory()
 	m := &Model{
-		A:  0x0,
-		X:  0x0,
-		Y:  0x0,
-		PC: 0x0,
-		// SP:     0x0,
-		SR:     0b00100000,
-		Memory: mem,
-		Stack:  NewStack(mem),
+		PC:        0x0,
+		Memory:    NewMemory(),
+		Registers: NewRegisters(),
+		Flags:     NewFlags(),
 	}
 	m.opcodes = InitOpcodes(m)
 	return m
@@ -63,41 +46,6 @@ func (m *Model) NextByte() byte {
 // returns the next 2 bytes from those addresses
 func (m *Model) NextWord() []byte {
 	return []byte{m.NextByte(), m.NextByte()}
-}
-
-// N returns the value of the Negative register
-func (m *Model) N() bool {
-	return m.getRegisterBit(n) != 0
-}
-
-// V returns the value of the Overflow register
-func (m *Model) V() bool {
-	return m.getRegisterBit(v) != 0
-}
-
-// B returns the value of the Break register
-func (m *Model) B() bool {
-	return m.getRegisterBit(b) != 0
-}
-
-// D returns the value of the Decimal register
-func (m *Model) D() bool {
-	return m.getRegisterBit(d) != 0
-}
-
-// I returns the value of the Interupt Disable register
-func (m *Model) I() bool {
-	return m.getRegisterBit(i) != 0
-}
-
-// Z returns the value of the Zero register
-func (m *Model) Z() bool {
-	return m.getRegisterBit(z) != 0
-}
-
-// C returns the value of the Carry register
-func (m *Model) C() byte {
-	return m.getRegisterBit(c)
 }
 
 // AX returns a []byte memory address
@@ -163,46 +111,22 @@ func (m *Model) ZPIY(b byte) []byte {
 // LDA performs an LDA operation
 func (m *Model) LDA(val byte) {
 	m.A = val
-	if int8(val) < 0 {
-		m.setRegisterBit(n)
-	} else {
-		m.clearRegisterBit(n)
-	}
-	if val == 0 {
-		m.setRegisterBit(z)
-	} else {
-		m.clearRegisterBit(z)
-	}
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
 }
 
 // LDX performs an LDX operation
 func (m *Model) LDX(val byte) {
 	m.X = val
-	if int8(val) < 0 {
-		m.setRegisterBit(n)
-	} else {
-		m.clearRegisterBit(n)
-	}
-	if val == 0 {
-		m.setRegisterBit(z)
-	} else {
-		m.clearRegisterBit(z)
-	}
+	m.SetN(int8(m.X) < 0)
+	m.SetZ(m.X == 0)
 }
 
 // LDY performs an LDY operation
 func (m *Model) LDY(val byte) {
 	m.Y = val
-	if int8(val) < 0 {
-		m.setRegisterBit(n)
-	} else {
-		m.clearRegisterBit(n)
-	}
-	if val == 0 {
-		m.setRegisterBit(z)
-	} else {
-		m.clearRegisterBit(z)
-	}
+	m.SetN(int8(m.Y) < 0)
+	m.SetZ(m.Y == 0)
 }
 
 // STA performs an STA operation
@@ -224,20 +148,20 @@ func (m *Model) STY(a ...byte) {
 func (m *Model) ADC(a byte) {
 	initial := m.A
 	m.A += a + m.C()
-	m.updateRegisterBit(n, int8(m.A) < 0)
-	m.updateRegisterBit(z, m.A == 0)
-	m.updateRegisterBit(c, uint8(m.A) < uint8(initial))
-	m.updateRegisterBit(v, Int8Overflows(int8(initial), int8(m.A)))
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
+	m.SetC(uint8(m.A) < uint8(initial))
+	m.SetV(Int8Overflows(int8(initial), int8(m.A)))
 }
 
 // SBC performs an SBC operation
 func (m *Model) SBC(a byte) {
 	initial := m.A
 	m.A = m.A - a - m.borrow()
-	m.updateRegisterBit(n, int8(m.A) < 0)
-	m.updateRegisterBit(z, m.A == 0)
-	m.updateRegisterBit(c, uint8(m.A) < uint8(initial))
-	m.updateRegisterBit(v, Int8Overflows(int8(initial), int8(m.A)))
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
+	m.SetC(uint8(m.A) < uint8(initial))
+	m.SetV(Int8Overflows(int8(initial), int8(m.A)))
 }
 
 // INC performs an INC operation
@@ -245,22 +169,22 @@ func (m *Model) INC(r Resolver) {
 	a, val := r(m)
 	val++
 	m.Set(val, a...)
-	m.updateRegisterBit(n, int8(val) < 0)
-	m.updateRegisterBit(z, val == 0)
+	m.SetN(int8(val) < 0)
+	m.SetZ(val == 0)
 }
 
 // INX performs an INX operation
 func (m *Model) INX() {
 	m.X++
-	m.updateRegisterBit(n, int8(m.X) < 0)
-	m.updateRegisterBit(z, m.X == 0)
+	m.SetN(int8(m.X) < 0)
+	m.SetZ(m.X == 0)
 }
 
 // INY performs an INY operation
 func (m *Model) INY() {
 	m.Y++
-	m.updateRegisterBit(n, int8(m.Y) < 0)
-	m.updateRegisterBit(z, m.Y == 0)
+	m.SetN(int8(m.Y) < 0)
+	m.SetZ(m.Y == 0)
 }
 
 // DEC performs a DEC operation
@@ -268,31 +192,31 @@ func (m *Model) DEC(r Resolver) {
 	a, val := r(m)
 	val--
 	m.Set(val, a...)
-	m.updateRegisterBit(n, int8(val) < 0)
-	m.updateRegisterBit(z, val == 0)
+	m.SetN(int8(val) < 0)
+	m.SetZ(val == 0)
 }
 
 // DEX performs a DEX operation
 func (m *Model) DEX() {
 	m.X--
-	m.updateRegisterBit(n, int8(m.X) < 0)
-	m.updateRegisterBit(z, m.X == 0)
+	m.SetN(int8(m.X) < 0)
+	m.SetZ(m.X == 0)
 }
 
 // DEY performs a DEY operation
 func (m *Model) DEY() {
 	m.Y--
-	m.updateRegisterBit(n, int8(m.Y) < 0)
-	m.updateRegisterBit(z, m.Y == 0)
+	m.SetN(int8(m.Y) < 0)
+	m.SetZ(m.Y == 0)
 }
 
 // ASL performs an ASL operation
 func (m *Model) ASL(r Resolver) {
 	asl := func(val byte) byte {
-		m.updateRegisterBit(c, 0b10000000&val != 0)
+		m.SetC(0b10000000&val != 0)
 		val <<= 1
-		m.updateRegisterBit(n, int8(val) < 0)
-		m.updateRegisterBit(z, byte(val) == 0)
+		m.SetN(int8(val) < 0)
+		m.SetZ(byte(val) == 0)
 		return val
 	}
 	if r != nil {
@@ -306,10 +230,10 @@ func (m *Model) ASL(r Resolver) {
 // LSR performs an LSR operation
 func (m *Model) LSR(r Resolver) {
 	lsr := func(val byte) byte {
-		m.updateRegisterBit(c, val&1 != 0)
+		m.SetC(val&1 != 0)
 		val >>= 1
-		m.updateRegisterBit(n, int8(val) < 0)
-		m.updateRegisterBit(z, val == 0)
+		m.SetN(int8(val) < 0)
+		m.SetZ(val == 0)
 		return val
 	}
 	if r != nil {
@@ -324,11 +248,11 @@ func (m *Model) LSR(r Resolver) {
 func (m *Model) ROL(r Resolver) {
 	rol := func(val byte) byte {
 		o := m.C()
-		m.updateRegisterBit(c, val&0b10000000 != 0)
+		m.SetC(val&0b10000000 != 0)
 		val <<= 1
 		val |= o
-		m.updateRegisterBit(n, int8(val) < 0)
-		m.updateRegisterBit(z, val == 0)
+		m.SetN(int8(val) < 0)
+		m.SetZ(val == 0)
 		return val
 	}
 	if r != nil {
@@ -343,11 +267,11 @@ func (m *Model) ROL(r Resolver) {
 func (m *Model) ROR(r Resolver) {
 	ror := func(val byte) byte {
 		o := m.C()
-		m.updateRegisterBit(c, val&1 != 0)
+		m.SetC(val&1 != 0)
 		val >>= 1
 		val |= o << 7
-		m.updateRegisterBit(n, int8(val) < 0)
-		m.updateRegisterBit(z, val == 0)
+		m.SetN(int8(val) < 0)
+		m.SetZ(val == 0)
 		return val
 	}
 	if r != nil {
@@ -362,24 +286,24 @@ func (m *Model) ROR(r Resolver) {
 func (m *Model) AND(r Resolver) {
 	_, val := r(m)
 	m.A &= val
-	m.updateRegisterBit(n, int8(m.A) < 0)
-	m.updateRegisterBit(z, m.A == 0)
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
 }
 
 // ORA performs an ORA operation
 func (m *Model) ORA(r Resolver) {
 	_, val := r(m)
 	m.A |= val
-	m.updateRegisterBit(n, int8(m.A) < 0)
-	m.updateRegisterBit(z, m.A == 0)
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
 }
 
 // XOR performs an XOR operation
 func (m *Model) XOR(r Resolver) {
 	_, val := r(m)
 	m.A ^= val
-	m.updateRegisterBit(n, int8(m.A) < 0)
-	m.updateRegisterBit(z, m.A == 0)
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
 }
 
 // CMP performs a CMP operation
@@ -403,9 +327,9 @@ func (m *Model) CPY(r Resolver) {
 // BIT performs a BIT operation
 func (m *Model) BIT(r Resolver) {
 	_, val := r(m)
-	m.updateRegisterBit(n, val&(1<<7) != 0)
-	m.updateRegisterBit(v, val&(1<<6) != 0)
-	m.updateRegisterBit(z, m.A&val == 0)
+	m.SetN(val&(1<<7) != 0)
+	m.SetV(val&(1<<6) != 0)
+	m.SetZ(m.A&val == 0)
 }
 
 // BCC performs a BCC operation
@@ -467,43 +391,43 @@ func (m *Model) BVS(b byte) {
 // TAX performs a TAX operation
 func (m *Model) TAX() {
 	m.X = m.A
-	m.updateRegisterBit(n, int8(m.X) < 0)
-	m.updateRegisterBit(z, m.X == 0)
+	m.SetN(int8(m.X) < 0)
+	m.SetZ(m.X == 0)
 }
 
 // TXA performs a TXA operation
 func (m *Model) TXA() {
 	m.A = m.X
-	m.updateRegisterBit(n, int8(m.A) < 0)
-	m.updateRegisterBit(z, m.A == 0)
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
 }
 
 // TAY performs a TAY operation
 func (m *Model) TAY() {
 	m.Y = m.A
-	m.updateRegisterBit(n, int8(m.Y) < 0)
-	m.updateRegisterBit(z, m.Y == 0)
+	m.SetN(int8(m.Y) < 0)
+	m.SetZ(m.Y == 0)
 }
 
 // TYA performs a TYA operation
 func (m *Model) TYA() {
 	m.A = m.Y
-	m.updateRegisterBit(n, int8(m.A) < 0)
-	m.updateRegisterBit(z, m.A == 0)
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
 }
 
 // TSX performs a TSX operation
 func (m *Model) TSX() {
 	m.X = m.SP
-	m.updateRegisterBit(n, int8(m.X) < 0)
-	m.updateRegisterBit(z, m.X == 0)
+	m.SetN(int8(m.X) < 0)
+	m.SetZ(m.X == 0)
 }
 
 // TXS performs a TXS operation
 func (m *Model) TXS() {
 	m.SP = m.X
-	m.updateRegisterBit(n, int8(m.SP) < 0)
-	m.updateRegisterBit(z, m.SP == 0)
+	m.SetN(int8(m.SP) < 0)
+	m.SetZ(m.SP == 0)
 }
 
 // PHA performs a PHA operation
@@ -514,18 +438,18 @@ func (m *Model) PHA() {
 // PLA performs a PLA operation
 func (m *Model) PLA() {
 	m.A = m.Pop()
-	m.updateRegisterBit(n, int8(m.A) < 0)
-	m.updateRegisterBit(z, m.A == 0)
+	m.SetN(int8(m.A) < 0)
+	m.SetZ(m.A == 0)
 }
 
 // PHP performs a PHP operation
 func (m *Model) PHP() {
-	m.Push(m.SR & 0b11001111)
+	m.Push(m.SR.Byte() & 0b11001111)
 }
 
 // PLP performs a PLP operation
 func (m *Model) PLP() {
-	m.SR |= m.Pop()
+	m.SR = bit.FromByte(m.SR.Byte() | m.Pop())
 }
 
 // JMP performs a JMP operation
@@ -549,68 +473,53 @@ func (m *Model) RTS() {
 
 // RTI performs an RTI operation
 func (m *Model) RTI() {
-	m.SR = m.Pop()
+	m.SR = bit.FromByte(m.Pop())
 	m.RTS()
 }
 
 // CLC performs a CLC operation
 func (m *Model) CLC() {
-	m.clearRegisterBit(c)
+	m.SetC(false)
 }
 
 // SEC performs a SEC operation
 func (m *Model) SEC() {
-	m.setRegisterBit(c)
+	m.SetC(true)
 }
 
 // CLD performs a CLD operation
 func (m *Model) CLD() {
-	m.clearRegisterBit(d)
+	m.SetD(false)
 }
 
 // SED performs a SED operation
 func (m *Model) SED() {
-	m.setRegisterBit(d)
+	m.SetD(true)
 }
 
 // CLI performs a CLI operation
 func (m *Model) CLI() {
-	m.clearRegisterBit(i)
+	m.SetI(false)
 }
 
 // SEI performs an SEI operation
 func (m *Model) SEI() {
-	m.setRegisterBit(i)
+	m.SetI(true)
 }
 
 // CLV performs a CLV operation
 func (m *Model) CLV() {
-	m.clearRegisterBit(v)
+	m.SetV(false)
 }
 
 // BRK performs a BRK operation
 func (m *Model) BRK() {
-	m.setRegisterBit(b)
-	m.setRegisterBit(i)
+	m.SetB(true)
+	m.SetI(true)
 }
 
 // NOP does nothing
 func (m *Model) NOP() {}
-
-// SetZero sets the Zero flag
-func (m *Model) SetZero() {
-	m.setRegisterBit(z)
-}
-
-// SetNegative sets the Negative flag
-func (m *Model) SetNegative() {
-	m.setRegisterBit(n)
-}
-
-// SetOverflow sets the oVerflow flag
-func (m *Model) SetOverflow() {
-	m.setRegisterBit(v)
-}
 
 func (m *Model) offsetPC(b byte) {
 	b--
@@ -622,34 +531,7 @@ func (m *Model) offsetPC(b byte) {
 }
 
 func (m *Model) compare(a, b byte) {
-	m.updateRegisterBit(n, a < b)
-	m.updateRegisterBit(z, a == b)
-	m.updateRegisterBit(c, a >= b)
-}
-
-func (m *Model) borrow() byte {
-	if m.C() == 0x0 {
-		return 0x1
-	}
-	return 0x0
-}
-
-func (m *Model) getRegisterBit(n int8) byte {
-	return ((1 << n) & m.SR)
-}
-
-func (m *Model) updateRegisterBit(n int8, v bool) {
-	if v {
-		m.setRegisterBit(n)
-	} else {
-		m.clearRegisterBit(n)
-	}
-}
-
-func (m *Model) setRegisterBit(n int8) {
-	m.SR |= 1 << n
-}
-
-func (m *Model) clearRegisterBit(n int8) {
-	m.SR &^= 1 << n
+	m.SetN(a < b)
+	m.SetZ(a == b)
+	m.SetC(a >= b)
 }

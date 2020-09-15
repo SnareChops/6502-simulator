@@ -19,7 +19,7 @@ func Test0x10(t *testing.T) {
 	require.Equal(t, uint16(3), m.PC)
 
 	m = raw(0x10, 2)
-	m.SetNegative()
+	m.SetN(true)
 	m.Tick()
 	require.Equal(t, uint16(2), m.PC)
 }
